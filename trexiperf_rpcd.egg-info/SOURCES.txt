@@ -1,0 +1,10 @@
+setup.cfg
+setup.py
+trexiperf_rpcd.egg-info/PKG-INFO
+trexiperf_rpcd.egg-info/SOURCES.txt
+trexiperf_rpcd.egg-info/dependency_links.txt
+trexiperf_rpcd.egg-info/entry_points.txt
+trexiperf_rpcd.egg-info/top_level.txt
+trexiperf_rpcd.egg-info/zip-safe
+trexiperf_rpcd/__init__.py
+trexiperf_rpcd/sample.py
