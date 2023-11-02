@@ -22,7 +22,7 @@ export class WebCli {
 
 		json2.method = this.prefix + method
 		json2.params = params
-		json2.id = (Math.random() * 0xFFFFFF).toString()
+		json2.id = Math.ceil((Math.random() * 0xFFFFFF)).toString()
 
 		var req = new XMLHttpRequest();
 		req.open('POST', '/rpc', true);
@@ -44,7 +44,8 @@ export class WebCli {
 		// req.onloadend = function (ev) {
 		// 	console.log(ev)
 		// }
-		req.send(JSON.stringify(this.json2))
-		console.log("req send, waiting...")
+		var str = JSON.stringify(json2)
+		req.send(str)
+		console.log("JSON-RPC2:", str)
 	}
 }

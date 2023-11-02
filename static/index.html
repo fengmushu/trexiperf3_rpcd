@@ -18,15 +18,21 @@
                 <option selected>Iperf3</option>
                 <option>Ixchariot</option>
             </select>
-            <label for="transmission_ul">UP-Link</label>
-            <input type="radio" name="transmission" id="transmission_ul" checked>
-            <label for="transmission_dl">Down-Link</label>
-            <input type="radio" name="transmission" id="transmission_dl">
-            <label for="txt_server_addresss" class="ui-controlgroup-label"># Stream sever</label>
+            <label for="txt_server_addresss" class="ui-controlgroup-label">To</label>
             <input id="txt_server_addresss" class="ui-spinner-input" name="sever_address">
-            <button id="btn_apply">Connect</button>
+            <button id="btn_connect">Connect ...</button>
+            <label for="stream_ul">UP-Link</label>
+            <input type="radio" name="stream_type" id="stream_ul" value="UL" checked>
+            <label for="stream_dl">Down-Link</label>
+            <input type="radio" name="stream_type" id="stream_dl" value="DL">
+            <label for="stream_db">Duplex</label>
+            <input type="radio" name="stream_type" id="stream_db" value="DB">
+            <!-- <button id="btn_action">Start/Stop/Pause</button> -->
         </div>
     </fieldset>
+    <div id="progressbar">
+        <div class="progress-label"></div>
+    </div>
 
     <div id="tabs">
         <ul>
@@ -47,45 +53,6 @@
     </div>
 
     <script src="jquery-ui/jquery-ui.js"></script>
-    <script>
-        // render
-        var sever_address = []
-        function update_server_address() {
-            window.webcli.call('server', function (ev) {
-                sever_address = JSON.parse(ev.message)
-                sever_address = sever_address
-            })
-        }
-        var txt_server = $("#txt_server_addresss").autocomplete({
-            source: function (req, rsp) {
-                var term = req.term
-                if (term in sever_address) {
-                    rsp(sever_address)
-                    return
-                }
-                update_server_address()
-            }
-        });
-        $("#txt_server_addresss").spinner({
-            spin: function (ev, ui) {
-                this.selection_idx = sever_address.indexOf(this.value)
-                this.selection_idx += ui.value
-                if (sever_address[this.selection_idx])
-                    this.value = sever_address[this.selection_idx]
-                return false
-            }
-        })
-
-        $("#controlgroup").controlgroup();
-
-        $("#tabs").tabs()
-
-        $('#btn_apply').on('click', function (ev) {
-            window.webcli.call('start', function (x) {
-                console.log(x)
-            });
-        });
-    </script>
     <script type="module" src="index.js"></script>
 </body>
 

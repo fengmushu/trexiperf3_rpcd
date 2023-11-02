@@ -1,9 +1,10 @@
 import subprocess
 import json
 
-
-def greeting(name="world"):
-    return {"message": "Hello, %s!" % name}
+def connect(target, type):
+    print('client {},{} connecting...'.format(target, type))
+    # test server exsited
+    return {"message": 'ok'}
 
 
 def start():
