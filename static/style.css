@@ -7,6 +7,10 @@ body #f_global_config {
 	padding: 0 0 2px 0;
 }
 
+body #tabs-1 {
+	height: 660px;
+}
+
 .ui-progressbar {
 	position: relative;
 }

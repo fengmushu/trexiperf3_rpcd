@@ -62,4 +62,6 @@ $(function () {
 	bind_progressbar()
 	bind_others()
 	update_server_address()
+
+	init_chart()
 })
