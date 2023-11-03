@@ -41,19 +41,34 @@ function bind_progressbar() {
 }
 
 function bind_others() {
-	$("#controlgroup").controlgroup();
+	$("#cg_test_case").controlgroup();
+	$("#cg_stream_config").controlgroup();
 	$("#tabs").tabs()
-	$('#btn_connect').button({
+	$("#list_test_case").selectmenu()
+	$('#btn_stream_add').button({
 		icon: 'ui-icon-circle-check',
 		showLabel: true,
 	})
-	$('#btn_connect').on('click', function (ev) {
+	$('#btn_stream_add').on('click', function (ev) {
+		var type = $('#list_stream_type').val()
 		var target = window.txt_server.val()
-		var type = $("input[name='stream_type']:checked").val();
-		window.webcli.call('connect', [target, type], function (ev) {
-			console.log(ev)
+		var dir = $("input[name='stream_type']:checked").val();
+		window.webcli.call('stream_add', [type, target, '1G', '1500', '0.1', dir], function (ev) {
+			var data = JSON.parse(ev.message)
+			data_sync_streams(data)
 		});
 	});
+}
+
+function bind_window() {
+	function resizeBody() {
+		$('#tabs').height($(window).height() - $("#progressbar").height() - 25)
+		$('#tabs-1').height($('#tabs').height() - 60)
+	}
+	$(window).resize(function () {
+		resizeBody()
+	})
+	resizeBody()
 }
 
 $(function () {
@@ -61,7 +76,9 @@ $(function () {
 	bind_server()
 	bind_progressbar()
 	bind_others()
+	bind_window()
 	update_server_address()
 
 	init_chart()
+	init_stream_table()
 })

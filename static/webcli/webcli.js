@@ -13,7 +13,7 @@ export class WebCli {
 			this.prefix = "trexiperf_rpcd.sample."
 	}
 
-	call(method, params, callback) {
+	async call(method, params, callback) {
 		var json2 = this.json2
 
 		if (typeof (params) == "function") {

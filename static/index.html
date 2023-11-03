@@ -4,60 +4,101 @@
 <head>
     <script src="jquery-ui/external/jquery/jquery.js"></script>
     <script src="json2.js"></script>
-    <link href="./jquery-ui/themes/dark-hive/jquery-ui.css" rel="stylesheet">
-    <link href="./jquery-ui/themes/dark-hive/theme.css" rel="stylesheet">
+    <link href="./jquery-ui/themes/hot-sneaks/jquery-ui.css" rel="stylesheet">
+    <link href="./jquery-ui/themes/hot-sneaks/theme.css" rel="stylesheet">
+    <link href="./DataTables/datatables.css" rel="stylesheet">
     <link href="./style.css" rel="stylesheet">
 </head>
 
 <body>
-    <fieldset id="f_global_config">
-        <!-- <legend>Global configuration</legend> -->
-        <div id="controlgroup">
-            <select id="list_stream_type">
-                <option>Cisco-Trex</option>
-                <option selected>Iperf3</option>
-                <option>Ixchariot</option>
-            </select>
-            <label for="txt_server_addresss" class="ui-controlgroup-label">To</label>
-            <input id="txt_server_addresss" class="ui-spinner-input" name="sever_address">
-            <button id="btn_connect">Connect ...</button>
-            <label for="stream_ul">UP-Link</label>
-            <input type="radio" name="stream_type" id="stream_ul" value="UL" checked>
-            <label for="stream_dl">Down-Link</label>
-            <input type="radio" name="stream_type" id="stream_dl" value="DL">
-            <label for="stream_db">Duplex</label>
-            <input type="radio" name="stream_type" id="stream_db" value="DB">
-            <!-- <button id="btn_action">Start/Stop/Pause</button> -->
-        </div>
-    </fieldset>
     <div id="progressbar">
         <div class="progress-label"></div>
     </div>
-
     <div id="tabs">
         <ul>
             <li><a href="#tabs-1">Dashboard</a></li>
             <li><a href="#tabs-2">Stream</a></li>
+            <li><a href="#tabs-5">Test case</a></li>
             <li><a href="#tabs-3">Statistics</a></li>
             <li><a href="#tabs-4">Reports</a></li>
         </ul>
-        <div id="tabs-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-            <div id="chartContainer" style="height: 370px; max-width: 920px; margin: 0px auto;"></div>
+        <div id="tabs-1">
+            <div id="mlineChart"></div>
         </div>
-        <div id="tabs-2">Phasellus mattis tincidunt nibh. Cras orci urna, blandit id, pretium vel, aliquet ornare,
-            felis. Maecenas scelerisque sem non nisl. Fusce sed lorem in enim dictum bibendum.</div>
+        <div id="tabs-2">
+            <fieldset id="f_stream_config">
+                <!-- <legend>Global configuration</legend> -->
+                <div id="cg_stream_config">
+                    <select id="list_stream_type">
+                        <option value="cisco-trex">Cisco-Trex</option>
+                        <option value="iperf3" selected>Iperf3</option>
+                        <option value="ixchariot">Ixchariot</option>
+                    </select>
+                    <label for="txt_server_addresss" class="ui-controlgroup-label">To</label>
+                    <input id="txt_server_addresss" class="ui-spinner-input" name="sever_address">
+                    <button id="btn_stream_add">[+ Stream]</button>
+                    <label for="stream_ul">UP-Link</label>
+                    <input type="radio" name="stream_type" id="stream_ul" value="UL" checked>
+                    <label for="stream_dl">Down-Link</label>
+                    <input type="radio" name="stream_type" id="stream_dl" value="DL">
+                    <label for="stream_db">Duplex</label>
+                    <input type="radio" name="stream_type" id="stream_db" value="DB">
+                    <!-- <button id="btn_action">Start/Stop/Pause</button> -->
+                </div>
+            </fieldset>
+            <table id="stream_table" class="display" width="100%"></table>
+        </div>
         <div id="tabs-3">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna,
             interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
         <div id="tabs-4">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna,
             interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
+        <div id="tabs-5">
+            <fieldset id="f_test_case">
+                <legend>
+                    <select id="list_test_case">
+                        <option value="rate_over_range" selected>Rate over Range</option>
+                        <option value="rate_over_angle">Rate over Angles</option>
+                        <option value="rate_over_air">3D rate</option>
+                    </select>
+                </legend>
+                <div id="cg_test_case">
+                    <div>
+                        <label for="txt_atten_start" class="ui-controlgroup-label">Start</label>
+                        <input id="txt_atten_start" class="ui-spinner-input" name="atten_start">
+                        <label for="txt_atten_step" class="ui-controlgroup-label">Step</label>
+                        <input id="txt_atten_step" class="ui-spinner-input" name="atten_step">
+                        <label for="txt_atten_stop" class="ui-controlgroup-label">Stop</label>
+                        <input id="txt_atten_stop" class="ui-spinner-input" name="atten_stop">
+                    </div>
+                    <div>
+                        <label for="txt_angle_start" class="ui-controlgroup-label">Start</label>
+                        <input id="txt_angle_start" class="ui-spinner-input" name="angle_start">
+                        <label for="txt_angle_step" class="ui-controlgroup-label">Step</label>
+                        <input id="txt_angle_step" class="ui-spinner-input" name="angle_step">
+                        <label for="txt_angle_stop" class="ui-controlgroup-label">Stop</label>
+                        <input id="txt_angle_stop" class="ui-spinner-input" name="angle_stop">
+                    </div>
+
+                    <!-- <button id="btn_stream_add">[+ Stream]</button>
+                    <label for="stream_ul">UP-Link</label>
+                    <input type="radio" name="stream_type" id="stream_ul" value="UL" checked>
+                    <label for="stream_dl">Down-Link</label>
+                    <input type="radio" name="stream_type" id="stream_dl" value="DL">
+                    <label for="stream_db">Duplex</label>
+                    <input type="radio" name="stream_type" id="stream_db" value="DB"> -->
+                    <!-- <button id="btn_action">Start/Stop/Pause</button> -->
+                </div>
+            </fieldset>
+        </div>
     </div>
+
 
     <script src="jquery-ui/jquery-ui.js"></script>
     <!-- <script src="canvasjs-chart/canvasjs.min.js"></script> -->
     <script src="canvasjs-chart/jquery.canvasjs.min.js"></script>
+    <script src="DataTables/datatables.js"></script>
     <script src="chart.js"></script>
+    <script src="stream_table.js"></script>
     <script type="module" src="index.js"></script>
     <script>
 

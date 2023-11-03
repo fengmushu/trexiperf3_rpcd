@@ -3,13 +3,13 @@ function init_chart() {
 	var dataPoints1 = [];
 	var dataPoints2 = [];
 
-	var chart = new CanvasJS.Chart("chartContainer", {
+	var chart = new CanvasJS.Chart("mlineChart", {
 		zoomEnabled: true,
 		title: {
-			text: "Share Value of Two Companies"
+			text: "Runtime stream statistics"
 		},
 		axisX: {
-			title: "chart updates every 3 secs"
+			title: "chart updates every ^ secs"
 		},
 		axisY: {
 			prefix: "$",
@@ -28,18 +28,18 @@ function init_chart() {
 		data: [{
 			type: "line",
 			xValueType: "dateTime",
-			yValueFormatString: "$####.00",
+			yValueFormatString: "####.00",
 			xValueFormatString: "hh:mm:ss TT",
 			showInLegend: true,
-			name: "Company A",
+			name: "Stream A",
 			dataPoints: dataPoints1
 		},
 		{
 			type: "line",
 			xValueType: "dateTime",
-			yValueFormatString: "$####.00",
+			yValueFormatString: "####.00",
 			showInLegend: true,
-			name: "Company B",
+			name: "Stream B",
 			dataPoints: dataPoints2
 		}]
 	});
@@ -53,7 +53,7 @@ function init_chart() {
 		chart.render();
 	}
 
-	var updateInterval = 3000;
+	var updateInterval = 1200;
 	// initial value
 	var yValue1 = 600;
 	var yValue2 = 605;
@@ -89,8 +89,8 @@ function init_chart() {
 		}
 
 		// updating legend text with  updated with y Value 
-		chart.options.data[0].legendText = " Company A  $" + yValue1;
-		chart.options.data[1].legendText = " Company B  $" + yValue2;
+		chart.options.data[0].legendText = " Stream A  $" + yValue1;
+		chart.options.data[1].legendText = " Stream B  $" + yValue2;
 		chart.render();
 	}
 	// generates first set of dataPoints 
