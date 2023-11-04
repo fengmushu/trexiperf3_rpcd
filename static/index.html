@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    <div id="progressbar">
-        <div class="progress-label"></div>
+    <div id="main_bar">
+        <div id="main_bar_label" class="progress-label"></div>
     </div>
     <div id="tabs">
         <ul>
@@ -30,20 +30,19 @@
                 <!-- <legend>Global configuration</legend> -->
                 <div id="cg_stream_config">
                     <select id="list_stream_type">
-                        <option value="cisco-trex">Cisco-Trex</option>
+                        <option value="trex">Cisco-Trex</option>
                         <option value="iperf3" selected>Iperf3</option>
                         <option value="ixchariot">Ixchariot</option>
                     </select>
                     <label for="txt_server_addresss" class="ui-controlgroup-label">To</label>
                     <input id="txt_server_addresss" class="ui-spinner-input" name="sever_address">
-                    <button id="btn_stream_add">[+ Stream]</button>
                     <label for="stream_ul">UP-Link</label>
                     <input type="radio" name="stream_type" id="stream_ul" value="UL" checked>
                     <label for="stream_dl">Down-Link</label>
                     <input type="radio" name="stream_type" id="stream_dl" value="DL">
                     <label for="stream_db">Duplex</label>
                     <input type="radio" name="stream_type" id="stream_db" value="DB">
-                    <!-- <button id="btn_action">Start/Stop/Pause</button> -->
+                    <button id="btn_stream_add">[+ Stream]</button>
                 </div>
             </fieldset>
             <table id="stream_table" class="display" width="100%"></table>

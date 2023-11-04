@@ -24,10 +24,11 @@ fieldset {
 
 .progress-label {
 	position: absolute;
-	left: 50%;
-	top: 4px;
-	font-weight: bold;
-	text-shadow: 1px 1px 0 #fff;
+	left: 5%;
+	top: 8px;
+	font-weight: bolder;
+	color: lawngreen;
+	text-shadow: 1px 1px 0 black;
 }
 
 #icons {
