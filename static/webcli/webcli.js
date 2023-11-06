@@ -1,19 +1,33 @@
 export class WebCli {
 	json2 = {
 		"jsonrpc": "2.0",
-		"method": "trexiperf_rpcd.sample.greeting",
+		"method": "trexiperf_rpcd.API.monitor",
 		"params": [],
-		"id": "greeting"
+		"id": "monitor"
 	};
 
 	constructor(prefix) {
 		if (prefix)
 			this.prefix = prefix
 		else
-			this.prefix = "trexiperf_rpcd.sample."
+			this.prefix = "trexiperf_rpcd.API."
+		this.log = []
+	}
+
+	update_progress(val, txt) {
+		window.main_bar.progressbar("value", val)
+		if (txt) {
+			window.main_bar_label.text(txt)
+		}
+	}
+
+	update_webcli_log(clean=false) {
+		var log = window.webcli.get_log(clean)
+		window.uilog.html(log)
 	}
 
 	async call(method, params, callback) {
+		var cli = this
 		var json2 = this.json2
 
 		if (typeof (params) == "function") {
@@ -34,27 +48,29 @@ export class WebCli {
 				if (callback) {
 					if (res.error) {
 						var err = "[" + res.id + ": " + res.error.code + "] " + res.error.message
-						update_progress(false, err)
-						console.log(err)
+						cli.log.unshift(err)
+						cli.update_progress(false, err)
+						cli.update_webcli_log()
 						return
 					}
-					update_progress(false, "ready")
+					cli.update_progress(false, "ready")
 					var rc = res.result ? res.result.message : res
 					callback(rc);
 				}
 			}
 		};
-		// req.onprogress = function (ev) {
-		// 	console.log(ev)
-		// }
-		// req.onload = function (ev) {
-		// 	console.log(ev)
-		// }
-		// req.onloadend = function (ev) {
-		// 	console.log(ev)
-		// }
 		var str = JSON.stringify(json2)
 		req.send(str)
-		// console.log("JSON-RPC2:", str)
+	}
+
+	get_log(clean) {
+		var info = ''
+		this.log.forEach(line => {
+			info += line + '<br>'
+		});
+		if(clean) {
+			this.log = []
+		}
+		return info
 	}
 }

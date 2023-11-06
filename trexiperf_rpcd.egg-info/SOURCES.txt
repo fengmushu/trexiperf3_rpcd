@@ -7,4 +7,4 @@ trexiperf_rpcd.egg-info/entry_points.txt
 trexiperf_rpcd.egg-info/top_level.txt
 trexiperf_rpcd.egg-info/zip-safe
 trexiperf_rpcd/__init__.py
-trexiperf_rpcd/sample.py
+trexiperf_rpcd/API.py

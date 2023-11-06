@@ -56,13 +56,6 @@ function local_sync_streams(data) {
 	ui_sync_streams()
 }
 
-function update_progress(val, txt) {
-	window.main_bar.progressbar("value", val)
-	if (txt) {
-		window.main_bar_label.text(txt)
-	}
-}
-
 function remote_sync_streams() {
 	window.webcli.call('stream', ['list'], function (ev) {
 		var data = JSON.parse(ev)

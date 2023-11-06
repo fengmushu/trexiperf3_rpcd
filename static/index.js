@@ -44,8 +44,10 @@ function bind_progressbar() {
 function bind_tabs() {
 	$("#tabs").tabs({
 		activate: function (ev, ui) {
-			if (ui.newTab.text() == 'Stream')
+			if (ui.newTab.text() == 'Stream') {
 				remote_sync_streams()
+			}
+			window.webcli.update_webcli_log(true)
 		}
 	})
 }
@@ -57,6 +59,9 @@ function bind_others() {
 	$('#btn_stream_add').button({
 		icon: 'ui-icon-circle-check',
 		showLabel: true,
+	})
+	window.uilog = $("#txt_log").resizable({
+		helper: "ui-resizable-helper",
 	})
 	$('#btn_stream_add').on('click', function (ev) {
 		var type = $('#list_stream_type').val()
@@ -71,13 +76,21 @@ function bind_others() {
 
 function bind_window() {
 	function resizeBody() {
-		$('#tabs').height($(window).height() - $("#main_bar").height() - 25)
-		$('#tabs-1').height($('#tabs').height() - 60)
+		// $('#tabs').height($(window).height() - $("#main_bar").height() - 25)
+		// $('#tabs-1').height($('#tabs').height() - 60)
 	}
 	$(window).resize(function () {
 		resizeBody()
 	})
 	resizeBody()
+}
+
+function monitor_process() {
+	window.webcli.call('monitor', function (ev) {
+		if (ev && ev.length > 0) {
+			console.log(ev)
+		}
+	})
 }
 
 $(function () {
@@ -91,4 +104,8 @@ $(function () {
 
 	init_chart()
 	init_stream_table()
+
+	window.monitor = setInterval(() => {
+		monitor_process()
+	}, 1000)
 })

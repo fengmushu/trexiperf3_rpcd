@@ -46,16 +46,25 @@ class stream_nodes(object):
             ds.append(n)
         return ds
 
+    def update(self, scs):
+        for k, c in scs.items():
+            n = self.dataset.get(k)
+            if n != None:
+                print("update: key '{}' not found~!".format(k))
+                continue
+            n.update(c)
+        return True
+
     def append(self, stype, saddr, bw, psize, load, direct):
         key = time.strftime("%Y%m%H%M%S", time.localtime())
         # print(key)
         if stype == 'iperf3':
-            n = Iperf3(saddr, bw, psize, load, direct)
+            n = Iperf3(key, saddr, bw, psize, load, direct)
         elif stype == 'trex':
-            n = Trex(saddr, bw, psize, load, direct)
+            n = Trex(key, saddr, bw, psize, load, direct)
         else:
-            n = StreamNode(
-                stype, saddr, bw, psize, load, direct)
+            n = StreamNode(key,
+                           stype, saddr, bw, psize, load, direct)
         self.dataset[key] = n
         return True
 
@@ -67,19 +76,25 @@ class stream_nodes(object):
         return True
 
     def detect(self, id):
-        n = self.dataset[id]
-        if not n:
+        n = self.dataset.get(id)
+        if n == None:
             return False
         return n.detect()
 
     def start(self, id):
-        n = self.dataset[id]
-        if not n:
+        n = self.dataset.get(id)
+        if n == None:
             return False
         return n.start()
 
     def halt(self, id):
-        n = self.dataset[id]
-        if not n:
+        n = self.dataset.get(id)
+        if n == None:
             return False
         return n.halt()
+
+    def monitor(self):
+        m = []
+        for k, n in self.dataset.items():
+            m.append(n.monitor())
+        return m
