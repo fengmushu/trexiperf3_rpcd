@@ -87,8 +87,14 @@ function bind_window() {
 
 function monitor_process() {
 	window.webcli.call('monitor', function (ev) {
-		if (ev && ev.length > 0) {
-			console.log(ev)
+		var ma = JSON.parse(ev)
+		if (ma && ma.length > 0) {
+			ma.forEach(fresh => {
+				if (!fresh) {
+					remote_sync_streams()
+					return
+				}
+			});
 		}
 	})
 }

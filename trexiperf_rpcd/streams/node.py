@@ -14,7 +14,8 @@ class StreamNode(object):
             'handler': None
         }
         self.__ID = id
-        self.message = []
+        self.__message = []
+        self.__refresh_need = False
         print("Basic node created")
         pass
 
@@ -37,9 +38,12 @@ class StreamNode(object):
         return rc
 
     def set_status(self, status, info=None):
+        prev = self.config.get('Status')
+        if prev != status:
+            self.__refresh_need = True
         self.config['Status'] = status
         if info != None:
-            self.message.append({status: info})
+            self.__message.append({status: info})
             print(status, info)
         return True
 
@@ -54,10 +58,17 @@ class StreamNode(object):
         print("base start")
         return True
 
+    def stop(self):
+        print("base stop")
+        return True
+
     def halt(self):
         print("base halt")
         return True
-    
+
     def monitor(self):
-        print("base monitor")
+        # print("base monitor")
+        if self.__refresh_need:
+            self.__refresh_need = False
+            return False
         return True

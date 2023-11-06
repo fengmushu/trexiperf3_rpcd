@@ -6,7 +6,8 @@ from .node import StreamNode
 
 
 class Iperf3(StreamNode):
-    __IPERF3_PATH = './scripts/iperf3.sh'
+    __IPERF3_PATH_RUN = './scripts/iperf3-run.sh'
+    __IPERF3_PATH_KILL = './scripts/iperf3-kill.sh'
     __DEFAULT_STREAM_NUM = 4
     __DEFAULT_TIMEOUT_VAL = 30
     __TIMEOUT_VAL_7x24H = 600
@@ -17,6 +18,11 @@ class Iperf3(StreamNode):
         self.nvitem("TransTime", self.__DEFAULT_TIMEOUT_VAL)
         self.nvitem("StreamNum", self.__DEFAULT_STREAM_NUM)
         pass
+
+    def env_patch(self):
+        env = os.environ.copy()
+        env['STREAM_ID'] = self.ID()
+        return env
 
     def run(self, num, trans_time=None):
         if num:
@@ -32,17 +38,15 @@ class Iperf3(StreamNode):
         if timeout == 0:
             timeout = self.__TIMEOUT_VAL_7x24H
 
-        env = os.environ.copy()
-        env['STREAM_ID'] = self.ID()
         server_addr = self.nvitem('ServerAddr')
-        cmd = [self.__IPERF3_PATH, '-c', server_addr,
+        cmd = [self.__IPERF3_PATH_RUN, '-c', server_addr,
                '-P {}'.format(stream_num), '-t {}'.format(timeout)]
         print('iperf3 run', cmd)
         rc = 0
         try:
             self.set_status('running', cmd)
             proc = subprocess.run(cmd,
-                                  capture_output=True, check=True, timeout=timeout+3, env=env)
+                                  capture_output=True, check=True, timeout=timeout+3, env=self.env_patch())
             rc = proc.returncode
             if rc == 0:
                 message = proc.stdout.decode('utf-8')
@@ -73,6 +77,38 @@ class Iperf3(StreamNode):
             return True
         return self.run(num=4)
 
+    def stop(self):
+        print("iperf3 stop")
+        if self.status() != 'running':
+            return False
+        cmd = [self.__IPERF3_PATH_KILL]
+        try:
+            proc = subprocess.run(cmd,
+                                  capture_output=True, check=True, env=self.env_patch())
+            rc = proc.returncode
+            if rc == 0:
+                message = proc.stdout.decode('utf-8')
+                self.set_status('ready')
+            else:
+                message = proc.stderr.decode('utf-8')
+                self.set_status('error', message)
+        except subprocess.CalledProcessError as e:
+            message = "CPE: {}".format(e.stderr.decode('utf-8'))
+            self.set_status('idle', message)
+            pass
+        except Exception as e:
+            # timeout is normal running
+            message = "UHE: {}".format(e)
+            self.set_status('idle', message)
+            pass
+        return True
+
     def halt(self):
+        print("iperf3 halt")
+        if self.status() == "running":
+            return False
         self.set_status('idle')
         return True
+
+    def monitor(self):
+        return super().monitor()

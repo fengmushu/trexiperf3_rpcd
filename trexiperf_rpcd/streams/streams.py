@@ -1,4 +1,5 @@
 import time
+import os
 
 from .trex import Trex
 from .iperf3 import Iperf3
@@ -21,6 +22,7 @@ class stream_nodes(object):
         ]
         self.servers = self.__SERVER_LIST
         self.dataset = {}
+        os.popen("./scripts/paster-init.sh")
         pass
 
     def get_header(self):
@@ -70,9 +72,10 @@ class stream_nodes(object):
 
     def remove(self, id):
         n = self.dataset.pop(id)
-        if not n:
+        if n == None:
             return False
         print('remove: ', n.config)
+        os.popen('rm /tmp/paster/*-{}.pid'.format(id), 'r')
         return True
 
     def detect(self, id):
@@ -86,6 +89,12 @@ class stream_nodes(object):
         if n == None:
             return False
         return n.start()
+
+    def stop(self, id):
+        n = self.dataset.get(id)
+        if n == None:
+            return False
+        return n.stop()
 
     def halt(self, id):
         n = self.dataset.get(id)
