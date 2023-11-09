@@ -1,7 +1,7 @@
 export class WebCli {
 	json2 = {
 		"jsonrpc": "2.0",
-		"method": "trexiperf_rpcd.API.monitor",
+		"method": "traffic_gen.API.monitor",
 		"params": [],
 		"id": "monitor"
 	};
@@ -10,7 +10,7 @@ export class WebCli {
 		if (prefix)
 			this.prefix = prefix
 		else
-			this.prefix = "trexiperf_rpcd.API."
+			this.prefix = "traffic_gen.API."
 		this.log = []
 	}
 

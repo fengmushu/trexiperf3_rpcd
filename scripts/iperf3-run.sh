@@ -1,20 +1,34 @@
-#!/usr/bin/sh
+#!/bin/bash
 
-mkdir -p /tmp/paster/
+. ./scripts/iperf3-common.sh
 
-[ -f /tmp/paster/iperf3-${STREAM_ID}.pid ] && {
-	PID=`cat /tmp/paster/iperf3-${STREAM_ID}.pid`
-	[ -d /proc/$PID ] && {
-		# busy, process running
-		exit 1
+LOG "iperf3 run timeout $RUN_TIMEOUT"
+
+[ -f ${STREAM_PID_F} ] && {
+	PID=$(cat ${STREAM_PID_F})
+	[ -n "$PID" ] && {
+		[ -d /proc/$PID ] && {
+			# busy, process running
+			LOG "$PID busy running"
+			exit 0
+		} || {
+			# normal error, process exited
+			LOG "$PID exit to idle"
+			rm ${STREAM_PID_F}
+			exit 2
+		}
 	}
+	LOG "$PID killed, restart it"
 }
 
-/usr/local/bin/iperf3 $*  2>&1 &
-
+if [ $RUN_TIMEOUT -ge 3 ]; then
+	# not short detect running background
+	/usr/local/bin/iperf3 $* >>${RUNTIME_LOG_F} &
+else
+	/usr/local/bin/iperf3 $* >>${RUNTIME_LOG_F}
+fi
 RC=$?
 PID=$!
 
-echo $PID >  /tmp/paster/iperf3-${STREAM_ID}.pid
-
+echo $PID >${STREAM_PID_F}
 exit $RC

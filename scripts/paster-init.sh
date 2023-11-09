@@ -1,6 +1,5 @@
-#!/usr/bin/sh
+#!/bin/bash
 
-env
+. ./scripts/iperf3-common.sh
 
-mkdir -p /tmp/paster/
-rm /tmp/paster/*.pid 2>/dev/null
+rm /tmp/paster/ -fr 2>/dev/null

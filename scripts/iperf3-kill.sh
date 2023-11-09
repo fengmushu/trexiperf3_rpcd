@@ -1,5 +1,7 @@
-#!/usr/bin/sh
+#!/bin/bash
 
-env
+. ./scripts/iperf3-common.sh
 
-kill `cat "/tmp/paster/iperf3-${STREAM_ID}.pid"`
+kill `cat "$STREAM_PID_F"`
+
+rm ${STREAM_PID_F}

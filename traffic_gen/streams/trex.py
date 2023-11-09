@@ -1,3 +1,5 @@
+import subprocess
+
 from .node import StreamNode
 
 
@@ -7,6 +9,11 @@ class Trex(StreamNode):
         print("Trex created")
         pass
 
-    def detect(self):
+    def detect(self, num, trans_time):
         print("trex detect")
+        return True
+
+    def start(self):
+        print("trex start")
+
         return True
