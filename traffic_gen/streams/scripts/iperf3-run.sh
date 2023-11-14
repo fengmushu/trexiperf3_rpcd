@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./scripts/iperf3-common.sh
+. ./traffic_gen/streams/scripts/iperf3-common.sh
 
 LOG "iperf3 run timeout $RUN_TIMEOUT"
 

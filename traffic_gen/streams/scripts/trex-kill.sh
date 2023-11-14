@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./scripts/iperf3-common.sh
+. ./traffic_gen/streams/scripts/trex-common.sh
 
 kill `cat "$STREAM_PID_F"`
 

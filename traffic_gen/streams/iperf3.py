@@ -6,18 +6,13 @@ from .node import StreamNode
 
 
 class Iperf3(StreamNode):
-    __IPERF3_PATH_RUN = './scripts/iperf3-run.sh'
-    __IPERF3_PATH_KILL = './scripts/iperf3-kill.sh'
-    __DEFAULT_STREAM_NUM = 4
-    __DEFAULT_TIMEOUT_VAL = 30
-
     def __init__(self, key, saddr, bw, psize, load, direct) -> None:
         super().__init__(key, 'iperf3', saddr, bw, psize, load, direct)
         print("Iperf3 created")
-        self.nvitem("ScriptStart", self.__IPERF3_PATH_RUN)
-        self.nvitem("StreamNum", self.__DEFAULT_STREAM_NUM)
-        self.nvitem("TransTime", self.__DEFAULT_TIMEOUT_VAL)
-        self.nvitem("ScriptStop", self.__IPERF3_PATH_KILL)
+        self.nvitem("StreamNum", 4)
+        self.nvitem("TransTime", 30)
+        self.nvitem("ScriptStart", './traffic_gen/streams/scripts/iperf3-run.sh')
+        self.nvitem("ScriptStop", './traffic_gen/streams/scripts/iperf3-kill.sh')
         pass
 
     def run(self, num=0, trans_time=None):

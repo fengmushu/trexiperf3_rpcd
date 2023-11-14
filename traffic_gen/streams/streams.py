@@ -22,7 +22,7 @@ class stream_nodes(object):
         ]
         self.servers = self.__SERVER_LIST
         self.dataset = {}
-        os.popen("./scripts/paster-init.sh")
+        os.popen("./traffic_gen/streams/scripts/paster-init.sh")
         pass
 
     def get_header(self):
