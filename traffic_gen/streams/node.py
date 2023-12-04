@@ -20,6 +20,9 @@ class StreamNode(object):
         self.__ID = id
         self.__message = []
         self.__refresh_need = False
+        self.MAX_STAT_COUNT = 1024
+        self.nvitem('WlanCardAddr', "192.168.10.230")
+        self.SCRIPTS_STAT_SYNC = './traffic_gen/streams/scripts/rsync_statistics.sh'
         print("Basic node created")
         pass
 
@@ -51,10 +54,11 @@ class StreamNode(object):
             print(status, info)
         return True
 
-    def env_patch(self, tov=0):
+    def env_patch(self, kvm):
         env = os.environ.copy()
         env['STREAM_ID'] = self.ID()
-        env['RUN_TIMEOUT'] = "{}".format(tov)
+        for k, v in kvm.items():
+            env[k] = "{}".format(v)
         return env
 
     def run(self, num=0, trans_time=None):
@@ -75,7 +79,7 @@ class StreamNode(object):
         try:
             self.set_status('running', cmd)
             proc = subprocess.run(cmd,
-                                  capture_output=True, check=True, timeout=timeout+3, env=self.env_patch(tov=timeout))
+                                  capture_output=True, check=True, timeout=timeout+3, env=self.env_patch({"RUN_TIMEOUT": timeout}))
             rc = proc.returncode
             if rc == 0:
                 message = proc.stdout.decode('utf-8')
@@ -94,6 +98,23 @@ class StreamNode(object):
             # timeout is normal running
             message = "UHE: {}".format(e)
             self.set_status('error', message)
+            pass
+
+    def stat_rsync(self, tov=5):
+        try:
+            cmd = self.SCRIPTS_STAT_SYNC
+            proc = subprocess.run(cmd, capture_output=True, check=True, timeout=tov, env=self.env_patch({
+                "WLAN_CARD_ADDR": self.nvitem("WlanCardAddr"),
+            }))
+            rc = proc.returncode
+            if rc == 0:
+                message = proc.stdout.decode("utf-8")
+            else:
+                message = proc.stderr.decode('utf-8')
+            print(message)
+        except Exception as e:
+            message = "UHE: rsync - {}".format(e)
+            print(message)
             pass
 
     def status(self):
@@ -144,3 +165,25 @@ class StreamNode(object):
             self.__refresh_need = False
             return False
         return True
+
+    def statistics(self):
+        ''' load csv '''
+        # print("base statistics")
+        self.stat_rsync(tov=10)
+
+        ds = []
+        import csv
+        with open('/tmp/trex/csv/OpenWrt/interface-ath16/if_octets-2023-11-02', newline='') as stat:
+            dialect = csv.Sniffer().sniff(stat.read(128))
+            stat.seek(0)
+            stat.readline(128)  # ignore header line
+            rows = csv.reader(stat, dialect)
+            for row in rows:
+                # print(row)
+                ds.append(row)
+        if len(ds) > self.MAX_STAT_COUNT:
+            ignore = len(ds) - self.MAX_STAT_COUNT
+            ds = ds[ignore:]
+
+        # print(ds)
+        return ds

@@ -107,3 +107,9 @@ class stream_nodes(object):
         for k, n in self.dataset.items():
             m.append(n.monitor())
         return m
+
+    def statistics(self):
+        m = []
+        for k, n in self.dataset.items():
+            m.append(n.statistics())
+        return m

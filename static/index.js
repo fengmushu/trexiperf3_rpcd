@@ -41,8 +41,8 @@ function bind_progressbar() {
 	window.main_bar_label = $("#main_bar_label")
 }
 
-function bind_tabs() {
-	$("#tabs").tabs({
+function bind_tab_pages() {
+	window.main_tabs = $("#tabs").tabs({
 		activate: function (ev, ui) {
 			if (ui.newTab.text() == 'Stream') {
 				remote_sync_streams()
@@ -99,11 +99,28 @@ function monitor_process() {
 	})
 }
 
+function statistics_update() {
+	/* current first tab page? */
+	if (window.main_tabs.tabs('option', 'active') == 0) {
+		window.webcli.call('statistics', function (ev) {
+			var sa = JSON.parse(ev)
+			if (sa && sa.length > 0) {
+				sa.forEach(ds => {
+					if (ds) {
+						update_streams_chart(ds)
+						return
+					}
+				});
+			}
+		})
+	}
+}
+
 $(function () {
 	window.webcli = new WebCli()
 	bind_server()
 	bind_progressbar()
-	bind_tabs()
+	bind_tab_pages()
 	bind_others()
 	bind_window()
 	update_server_address()
@@ -114,4 +131,9 @@ $(function () {
 	window.monitor = setInterval(() => {
 		monitor_process()
 	}, 1000)
+
+	statistics_update()
+	setInterval(() => {
+		statistics_update()
+	}, 5000)
 })

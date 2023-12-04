@@ -1,8 +1,10 @@
 import json
 
 from .streams.streams import *
+from .streams.stations import *
 
 ss = stream_nodes()
+# stas = station_nodes()
 
 
 def server():
@@ -45,3 +47,7 @@ def stream_action(dosome):
 
 def monitor(mp=None):
     return {"message": json.dumps(ss.monitor())}
+
+
+def statistics(mp=None):
+    return {"message": json.dumps(ss.statistics())}
