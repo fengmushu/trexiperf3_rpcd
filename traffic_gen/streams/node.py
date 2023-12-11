@@ -20,7 +20,7 @@ class StreamNode(object):
         self.__ID = id
         self.__message = []
         self.__refresh_need = False
-        self.MAX_STAT_COUNT = 1024
+        self.MAX_STAT_COUNT = 512
         self.nvitem('WlanCardAddr', "192.168.10.230")
         self.SCRIPTS_STAT_SYNC = './traffic_gen/streams/scripts/rsync_statistics.sh'
         print("Basic node created")
@@ -171,19 +171,43 @@ class StreamNode(object):
         # print("base statistics")
         self.stat_rsync(tov=10)
 
-        ds = []
+        dm = {}
         import csv
-        with open('/tmp/trex/csv/OpenWrt/interface-ath16/if_octets-2023-11-02', newline='') as stat:
-            dialect = csv.Sniffer().sniff(stat.read(128))
-            stat.seek(0)
-            stat.readline(128)  # ignore header line
-            rows = csv.reader(stat, dialect)
-            for row in rows:
-                # print(row)
-                ds.append(row)
-        if len(ds) > self.MAX_STAT_COUNT:
-            ignore = len(ds) - self.MAX_STAT_COUNT
-            ds = ds[ignore:]
-
-        # print(ds)
-        return ds
+        import re
+        CSV_DIR_PREFIX = '/tmp/trex/csv/trex-sta1/'
+        for root, dirs, _ in os.walk(CSV_DIR_PREFIX):
+            for dir in dirs:
+                ifname = re.search(r'ath[0-9]+', dir, re.M | re.I)
+                if ifname:
+                    ifname = ifname.group()
+                    print(ifname)
+                else:
+                    continue
+                files = os.listdir(os.path.join(root, dir))
+                for file in files:
+                    if re.search('if_octets', file) == None:
+                        continue
+                    fp = os.path.join(root, dir, file)
+                    fa = file.split('-')
+                    print(ifname, fp, fa)
+                    ds = []
+                    try:
+                        with open(fp) as stat:
+                            dialect = csv.Sniffer().sniff(stat.readline(128))
+                            stat.seek(0)
+                            stat.readline(128)  # ignore header line
+                            rows = csv.reader(stat, dialect, delimiter=',')
+                            for row in rows:
+                                # print(row)
+                                ds.append(row)
+                    except Exception as e:
+                        print(e)
+                    def sort_by_time(elem):
+                        return elem[0]
+                    ds.sort(key=sort_by_time)
+                    if len(ds) > self.MAX_STAT_COUNT:
+                        ignore = len(ds) - self.MAX_STAT_COUNT
+                        ds = ds[ignore:]
+                dm.update({ifname: ds})
+        # print(dm)
+        return dm

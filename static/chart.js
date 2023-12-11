@@ -5,12 +5,13 @@ function init_chart() {
 		height: 680,
 		// width: 800,
 		animationEnabled: true,
+		theme: "dark1",
 		title: {
-			text: "Runtime stream statistics"
+			text: "WLAN Stations"
 		},
-		axisX: {
-			title: "-"
-		},
+		// axisX: {
+		// 	title: ""
+		// },
 		axisY: {
 			includeZero: true
 		},
@@ -20,7 +21,7 @@ function init_chart() {
 		legend: {
 			cursor: "pointer",
 			verticalAlign: "top",
-			fontSize: 22,
+			fontSize: 14,
 			fontColor: "dimGrey",
 			itemclick: toggleDataSeries
 		},
@@ -30,7 +31,7 @@ function init_chart() {
 			yValueFormatString: "####.00",
 			xValueFormatString: "hh:mm:ss TT",
 			showInLegend: true,
-			name: "RX",
+			name: "RX-",
 			dataPoints: []
 		},
 		{
@@ -38,7 +39,7 @@ function init_chart() {
 			xValueType: "dateTime",
 			yValueFormatString: "####.00",
 			showInLegend: true,
-			name: "TX",
+			name: "TX-",
 			dataPoints: []
 		}]
 	});
@@ -55,29 +56,49 @@ function init_chart() {
 	}
 }
 
-function update_streams_chart(ds) {
+function update_streams_chart(ifstat) {
 	var chart = window.chart_dash;
 
-	// ds.shift()
-	var RX = []; //chart.options.data[0].dataPoints
-	var TX = []; //chart.options.data[1].dataPoints
-	ds.forEach(row => {
-		var time = new Date();
-		time.setUTCSeconds(row[0])
-		yValueRx = Math.ceil(row[1] / 1024 / 100)
-		yValueTx = Math.ceil(row[2] / 1024 / 100)
-		RX.push({
-			x: time.getTime(),
-			y: yValueRx
+	chart.options.data = []
+	for (iface in ifstat) {
+		var RX = []
+		var TX = []
+		ds = ifstat[iface]
+		ds.forEach(row => {
+			var time = new Date();
+			time.setUTCSeconds(row[0])
+			yValueRx = Math.ceil(row[1] / 1024 / 100)
+			yValueTx = Math.ceil(row[2] / 1024 / 100)
+			RX.push({
+				x: time.getTime(),
+				y: yValueRx
+			});
+			TX.push({
+				x: time.getTime(),
+				y: yValueTx
+			});
 		});
-		TX.push({
-			x: time.getTime(),
-			y: yValueTx
-		});
-	});
-	chart.options.data[0].dataPoints = RX
-	chart.options.data[1].dataPoints = TX
-	chart.options.data[0].legendText = " RX " + yValueRx;
-	chart.options.data[1].legendText = " TX " + yValueTx;
+		lineRx = {
+			type: "line",
+			xValueType: "dateTime",
+			yValueFormatString: "####.00",
+			xValueFormatString: "hh:mm:ss TT",
+			showInLegend: true,
+			name: "RX-" + iface,
+		}
+		lineRx.dataPoints = RX
+		lineTx = {
+			type: "line",
+			xValueType: "dateTime",
+			yValueFormatString: "####.00",
+			showInLegend: true,
+			name: "TX-" + iface,
+		}
+		lineTx.dataPoints = TX
+		lineRx.legendText = "RX-" + iface + ':' + yValueRx;
+		lineTx.legendText = "TX-" + iface + ':' + yValueTx;
+		chart.options.data.push(lineRx)
+		chart.options.data.push(lineTx)
+	}
 	chart.render()
 }

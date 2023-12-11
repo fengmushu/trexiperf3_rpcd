@@ -15,13 +15,22 @@ export class WebCli {
 	}
 
 	update_progress(val, txt) {
-		window.main_bar.progressbar("value", val)
-		if (txt) {
-			window.main_bar_label.text(txt)
+		var bar = window.main_bar;
+		bar.progressbar("value", val)
+
+		var img_src = './img/icon_session_inactive.png'
+		bar.find('img').attr('src', img_src)
+
+		img_src = './img/icon_session_' + txt + '.png'
+		if (txt != 'active') {
+			img_src = './img/icon_session_error.png'
 		}
+		setTimeout(() => {
+			bar.find('img').attr('src', img_src)
+		}, 200)
 	}
 
-	update_webcli_log(clean=false) {
+	update_webcli_log(clean = false) {
 		var log = window.webcli.get_log(clean)
 		window.uilog.html(log)
 	}
@@ -43,6 +52,13 @@ export class WebCli {
 		req.setRequestHeader('Content-type', 'application/json');
 
 		req.onreadystatechange = function () {
+			/**
+			 * 0	UNSENT	代理被创建，但尚未调用 open() 方法。
+			 * 1	OPENED	open() 方法已经被调用。
+			 * 2	HEADERS_RECEIVED	send() 方法已经被调用，并且头部和状态已经可获得。
+			 * 3	LOADING	下载中；responseText 属性已经包含部分数据。
+			 * 4	DONE	下载操作已完成。
+			*/
 			if (req.readyState == 4 && req.status == 200) {
 				var res = JSON.parse(req.responseText);
 				if (callback) {
@@ -53,14 +69,20 @@ export class WebCli {
 						cli.update_webcli_log()
 						return
 					}
-					cli.update_progress(false, "ready")
-					var rc = res.result ? res.result.message : res
-					callback(rc);
+					cli.update_progress(false, "active")
+					callback(res.result ? res.result.message : res);
+				}
+			} else {
+				if (req.readyState == 4 && req.status != 200) {
+					/**
+					 * 4: status: 0 -> error, lost connection
+					*/
+					console.log(req.status, req.readyState)
+					cli.update_progress(false, "error")
 				}
 			}
 		};
-		var str = JSON.stringify(json2)
-		req.send(str)
+		req.send(JSON.stringify(json2))
 	}
 
 	get_log(clean) {
@@ -68,7 +90,7 @@ export class WebCli {
 		this.log.forEach(line => {
 			info += line + '<br>'
 		});
-		if(clean) {
+		if (clean) {
 			this.log = []
 		}
 		return info

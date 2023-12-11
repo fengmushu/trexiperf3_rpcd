@@ -47,6 +47,9 @@ function bind_tab_pages() {
 			if (ui.newTab.text() == 'Stream') {
 				remote_sync_streams()
 			}
+			if (ui.newTab.text() == 'Dashboard') {
+				statistics_update()
+			}
 			window.webcli.update_webcli_log(true)
 		}
 	})
@@ -74,11 +77,17 @@ function bind_others() {
 	});
 }
 
-function bind_window() {
-	function resizeBody() {
-		// $('#tabs').height($(window).height() - $("#main_bar").height() - 25)
-		// $('#tabs-1').height($('#tabs').height() - 60)
+function resizeBody() {
+	$('#tabs').height($(window).height() - $("#main_bar").height() - 25)
+	var c_height = $('#tabs').height() - 40
+	$('#tabs-1').height(c_height)
+	if (window.chart_dash) {
+		window.chart_dash.options.height = c_height - 10
 	}
+	statistics_update()
+}
+
+function bind_window() {
 	$(window).resize(function () {
 		resizeBody()
 	})
@@ -103,14 +112,9 @@ function statistics_update() {
 	/* current first tab page? */
 	if (window.main_tabs.tabs('option', 'active') == 0) {
 		window.webcli.call('statistics', function (ev) {
-			var sa = JSON.parse(ev)
-			if (sa && sa.length > 0) {
-				sa.forEach(ds => {
-					if (ds) {
-						update_streams_chart(ds)
-						return
-					}
-				});
+			var oa = JSON.parse(ev)
+			if (oa && oa.length > 0) {
+				update_streams_chart(oa[0])
 			}
 		})
 	}

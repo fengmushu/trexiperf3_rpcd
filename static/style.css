@@ -8,9 +8,22 @@ fieldset {
 	padding: 0 0 2px 0;
 }
 
+#main_bar img {
+	position: absolute;
+	padding: 5px;
+}
+
 #mlineChart {
-	/* height: 370px; */
-	margin: 0px auto;
+	margin: 0px;
+}
+
+#tabs-1 {
+	margin: 1px auto;
+	padding: 0px;
+}
+
+.ui-tabs {
+	padding: 1px;
 }
 
 .ui-tabs .ui-tabs-panel {
